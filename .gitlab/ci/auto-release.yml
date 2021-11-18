@@ -1,0 +1,36 @@
+generate_tag:
+  stage: prepare
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - echo "TAG=$(cat VERSION)" > tag.env
+  artifacts:
+    reports:
+      dotenv: tag.env
+
+auto-release-master:
+  image: registry.gitlab.com/gitlab-org/release-cli
+  needs:
+    - job: generate_tag
+    - job: build
+      artifacts: true
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never                                
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH 
+  script:
+    - echo "Release $TAG"
+
+  
+  release:
+    name: "Release $TAG"
+    description: "Created using the release-cli"
+    tag_name: v$TAG
+    ref: $CI_COMMIT_SHA
+    assets:
+      links:
+        - name: 'assets'
+          url: 'https://gitlab.com/your-account-name/your-repo-name/-/jobs/`cat CI_JOB_ID.txt`/artifacts/download'

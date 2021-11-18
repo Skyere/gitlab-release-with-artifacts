@@ -1,0 +1,17 @@
+build:
+  stage: build
+  script:
+# put your build script here
+# Python example
+#    - apt-get -y update && apt-get -y upgrade
+#    - python --version
+#    - apt install -y python3-pip
+#    - pip3 --version
+#    - pip3 install pyinstaller
+#    - pyinstaller ./.source/test.py --onefile
+    - echo "${CI_JOB_ID}" > CI_JOB_ID.txt
+  artifacts:
+    paths:
+      # path to your build file
+      # example:- ./build/test/*
+      - CI_JOB_ID.txt
